@@ -1,0 +1,9 @@
+flask
+werkzeug
+confluent-kafka  # For Python Kafka client
+pytesseract      # OCR library
+pdf2image        # To convert PDFs to images for OCR
+pillow           # Image processing (PIL)
+requests         # For mocking external API calls
+peewee
+psycopg2-binary 

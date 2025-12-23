@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Application Status</title>
+    <style>
+        body { font-family: Arial; padding: 20px; }
+        .approved { color: green; }
+        .rejected { color: red; }
+    </style>
+</head>
+<body>
+    <h1>Loan Application Status</h1>
+    <p><strong>Application ID:</strong> {{ app_id }}</p>
+    <p><strong>Name:</strong> {{ name }}</p>
+    <p><strong>Current Status:</strong> {{ status }}</p>
+    {% if commercial_score %}
+        <p><strong>Commercial Score:</strong> {{ commercial_score }}</p>
+    {% endif %}
+    {% if risk_decision %}
+        <p><strong>Risk Decision:</strong> 
+            <span class="{% if risk_decision == 'APPROVED' %}approved{% else %}rejected{% endif %}">
+                {{ risk_decision }}
+            </span>
+        </p>
+    {% endif %}
+    {% if credit_contract %}
+        <p><strong>Contract:</strong> {{ credit_contract }}</p>
+    {% endif %}
+    <hr>
+    <a href="/">Submit Another Application</a>
+</body>
+</html>

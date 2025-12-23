@@ -1,0 +1,31 @@
+bin\windows\kafka-storage.bat random-uuid
+
+bin\windows\kafka-storage.bat format --standalone -t np1osEhZSh-BbjC5FNGpFw -c config\server.properties
+2025-12-23T15:10:42.956513400Z main ERROR Reconfiguration failed: No configuration found for '2c7b84de' at 'null' in 'null'
+Formatting dynamic metadata voter directory /tmp/kraft-combined-logs with metadata.version 4.1-IV1.
+
+bin\windows\kafka-server-start.bat config\server.properties
+
+
+C:\kafka_2.13-4.1.1>bin\windows\kafka-topics.bat --create --topic LoanApplicationSubmitted --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
+2025-12-23T15:32:37.131589400Z main ERROR Reconfiguration failed: No configuration found for '2c7b84de' at 'null' in 'null'
+Created topic LoanApplicationSubmitted.
+
+C:\kafka_2.13-4.1.1>bin\windows\kafka-topics.bat --create --topic bin\windows\kafka-topics.bat --create --topic loan.application.submitted --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1^Z --bootstrap-server localhos
+t:9092 --partitions 1 --replication-factor 1
+C:\kafka_2.13-4.1.1>
+
+C:\kafka_2.13-4.1.1>bin\windows\kafka-topics.bat --create --topic RiskScoringCompleted --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
+2025-12-23T15:34:05.481855300Z main ERROR Reconfiguration failed: No configuration found for '2c7b84de' at 'null' in 'null'
+Created topic RiskScoringCompleted.
+
+C:\kafka_2.13-4.1.1>bin\windows\kafka-topics.bat --create --topic CreditContractGenerated --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
+2025-12-23T15:34:45.763290400Z main ERROR Reconfiguration failed: No configuration found for '2c7b84de' at 'null' in 'null'
+Created topic CreditContractGenerated.
+
+C:\kafka_2.13-4.1.1>bin\windows\kafka-topics.bat --list --bootstrap-server localhost:9092
+2025-12-23T16:02:25.935706600Z main ERROR Reconfiguration failed: No configuration found for '2c7b84de' at 'null' in 'null'
+CommercialScoringCompleted
+CreditContractGenerated
+LoanApplicationSubmitted
+RiskScoringCompleted
