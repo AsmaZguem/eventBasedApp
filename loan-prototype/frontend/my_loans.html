@@ -366,7 +366,6 @@
                     const data = await response.json();
                     displayLoans(data.loans);
                 } else if (response.status === 401) {
-                    // Not authenticated
                     localStorage.removeItem('user');
                     window.location.href = 'login.html';
                 } else {
@@ -401,6 +400,14 @@
                 const statusClass = loan.status.toLowerCase();
                 const cardClass = statusClass === 'approved' ? 'approved' : (statusClass === 'rejected' ? 'rejected' : '');
                 
+                // Calculate monthly payment and interest rate if not stored in DB
+                const interestRate = 5.0; // Default rate
+                const monthlyPayment = calculateMonthlyPayment(
+                    loan.loan_amount, 
+                    loan.loan_duration_months, 
+                    interestRate
+                );
+                
                 return `
                     <div class="loan-card ${cardClass}">
                         <div class="loan-header">
@@ -419,24 +426,24 @@
                             </div>
                             <div class="detail-item">
                                 <span class="detail-label">Duration</span>
-                                <span class="detail-value">${loan.duration_months} months</span>
+                                <span class="detail-value">${loan.loan_duration_months} months</span>
                             </div>
                             <div class="detail-item">
                                 <span class="detail-label">Monthly Payment</span>
-                                <span class="detail-value">${formatCurrency(loan.monthly_payment)} TND</span>
+                                <span class="detail-value">${formatCurrency(monthlyPayment)} TND</span>
                             </div>
                             <div class="detail-item">
                                 <span class="detail-label">Interest Rate</span>
-                                <span class="detail-value">${loan.interest_rate}%</span>
+                                <span class="detail-value">${interestRate.toFixed(2)}%</span>
                             </div>
                             <div class="detail-item">
                                 <span class="detail-label">Application Date</span>
-                                <span class="detail-value">${formatDate(loan.application_date)}</span>
+                                <span class="detail-value">${formatDate(loan.created_at)}</span>
                             </div>
-                            ${loan.approved_date ? `
+                            ${loan.updated_at && loan.status === 'APPROVED' ? `
                             <div class="detail-item">
                                 <span class="detail-label">Approved Date</span>
-                                <span class="detail-value">${formatDate(loan.approved_date)}</span>
+                                <span class="detail-value">${formatDate(loan.updated_at)}</span>
                             </div>
                             ` : ''}
                         </div>
@@ -444,15 +451,15 @@
                         ${loan.status === 'APPROVED' ? `
                         <div class="scores-section">
                             <div class="score-item">
-                                <div class="score-value">${loan.commercial_score}</div>
+                                <div class="score-value">${loan.commercial_score || 'N/A'}</div>
                                 <div class="score-label">Commercial Score</div>
                             </div>
                             <div class="score-item">
-                                <div class="score-value">${loan.risk_score}</div>
+                                <div class="score-value">${loan.risk_score || 'N/A'}</div>
                                 <div class="score-label">Risk Score</div>
                             </div>
                             <div class="score-item">
-                                <div class="score-value">${loan.final_score}</div>
+                                <div class="score-value">${loan.final_score || 'N/A'}</div>
                                 <div class="score-label">Final Score</div>
                             </div>
                         </div>
@@ -483,6 +490,16 @@
                     </div>
                 `;
             }).join('');
+        }
+
+        // Helper function to calculate monthly payment
+        function calculateMonthlyPayment(principal, months, annualRate) {
+            const monthlyRate = annualRate / 100 / 12;
+            if (monthlyRate === 0) return principal / months;
+            
+            const payment = principal * (monthlyRate * Math.pow(1 + monthlyRate, months)) / 
+                           (Math.pow(1 + monthlyRate, months) - 1);
+            return payment;
         }
 
         async function viewContract(loanId) {
