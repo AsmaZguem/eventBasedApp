@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loan Application - Bank Loan System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
+            margin-top: 30px;
+        }
+
+        .logout-btn {
+            padding: 8px 16px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .logout-btn:hover {
+            background: #c0392b;
+        }
+
+        .user-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 30px;
+        }
+
+        .user-info p {
+            margin: 5px 0;
+            color: #555;
+        }
+
+        .section {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-input-wrapper input[type=file] {
+            position: absolute;
+            left: -9999px;
+        }
+
+        .file-label {
+            display: block;
+            padding: 12px;
+            background: #f8f9fa;
+            border: 2px dashed #ddd;
+            border-radius: 5px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .file-label:hover {
+            border-color: #667eea;
+            background: #f0f0ff;
+        }
+
+        .file-name {
+            margin-top: 10px;
+            color: #555;
+            font-size: 14px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-top: 20px;
+        }
+
+        .btn:hover {
+            background: #5568d3;
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .btn-success {
+            background: #27ae60;
+        }
+
+        .btn-success:hover {
+            background: #229954;
+        }
+
+        .message {
+            padding: 12px;
+            border-radius: 5px;
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .files-list {
+            margin-top: 20px;
+        }
+
+        .file-item {
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .file-item span {
+            color: #555;
+        }
+
+        .badge {
+            background: #667eea;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+
+        .divider {
+            border-top: 2px solid #ddd;
+            margin: 30px 0;
+        }
+
+        .workflow-status {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            border: 1px solid #ffc107;
+        }
+
+        .workflow-status h3 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+
+        .workflow-status p {
+            color: #856404;
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Loan Application</h1>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+
+        <div class="user-info">
+            <p><strong>Name:</strong> <span id="userName"></span></p>
+            <p><strong>CIN:</strong> <span id="userCin"></span></p>
+            <p><strong>Email:</strong> <span id="userEmail"></span></p>
+        </div>
+
+        <!-- Step 1: Upload Documents -->
+        <div class="section">
+            <h2>Step 1: Upload Documents</h2>
+            <p style="color: #666; margin-bottom: 20px;">Upload your financial documents (PDF only)</p>
+
+            <form id="uploadForm">
+                <div class="file-input-wrapper">
+                    <input type="file" id="fileInput" accept=".pdf" required>
+                    <label for="fileInput" class="file-label">
+                        📄 Click to select PDF file
+                    </label>
+                </div>
+                <div class="file-name" id="fileName"></div>
+
+                <button type="submit" class="btn" id="uploadBtn">Upload Document</button>
+            </form>
+
+            <div id="uploadMessage"></div>
+
+            <div class="files-list">
+                <h3 style="margin-top: 20px; color: #333;">Your Uploaded Documents</h3>
+                <div id="filesList"></div>
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Step 2: Submit Loan Application -->
+        <div class="section">
+            <h2>Step 2: Submit Loan Application</h2>
+            <p style="color: #666; margin-bottom: 20px;">Enter your loan requirements</p>
+
+            <form id="loanForm">
+                <div class="form-group">
+                    <label for="loanAmount">Loan Amount (TND)</label>
+                    <input type="number" id="loanAmount" min="1000" max="100000" step="100" required placeholder="e.g., 10000">
+                </div>
+
+                <div class="form-group">
+                    <label for="duration">Duration (months)</label>
+                    <input type="number" id="duration" min="6" max="120" step="6" required placeholder="e.g., 24">
+                </div>
+
+                <button type="submit" class="btn btn-success" id="loanBtn">Submit Loan Application</button>
+            </form>
+
+            <div id="loanMessage"></div>
+
+            <div class="workflow-status" id="workflowStatus" style="display: none;">
+                <h3>🔄 Application Status</h3>
+                <p>Your loan application has been submitted and is being processed.</p>
+                <p>Please check the service console logs for real-time updates on:</p>
+                <ul style="margin-left: 20px; margin-top: 10px; color: #856404;">
+                    <li>Commercial service analysis</li>
+                    <li>Risk management evaluation</li>
+                    <li>Final decision notification</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5001';
+
+        // Check if user is logged in
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (!user) {
+            window.location.href = 'login.html';
+        } else {
+            document.getElementById('userName').textContent = user.name;
+            document.getElementById('userCin').textContent = user.cin;
+            document.getElementById('userEmail').textContent = user.email;
+            loadFiles();
+        }
+
+        // Show selected file name
+        document.getElementById('fileInput').addEventListener('change', (e) => {
+            const fileName = e.target.files[0]?.name || '';
+            document.getElementById('fileName').textContent = fileName ? `Selected: ${fileName}` : '';
+        });
+
+        // Handle file upload
+        document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const fileInput = document.getElementById('fileInput');
+            const uploadBtn = document.getElementById('uploadBtn');
+            const messageDiv = document.getElementById('uploadMessage');
+            
+            if (!fileInput.files[0]) {
+                showMessage(messageDiv, 'Please select a file', 'error');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+
+            uploadBtn.disabled = true;
+            uploadBtn.textContent = 'Uploading...';
+            messageDiv.innerHTML = '';
+
+            try {
+                const response = await fetch(`${API_URL}/api/upload`, {
+                    method: 'POST',
+                    credentials: 'include',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showMessage(messageDiv, `File uploaded successfully as: ${data.filename}`, 'success');
+                    fileInput.value = '';
+                    document.getElementById('fileName').textContent = '';
+                    loadFiles();
+                } else {
+                    showMessage(messageDiv, data.error || 'Upload failed', 'error');
+                }
+            } catch (error) {
+                showMessage(messageDiv, 'Connection error. Make sure the backend is running.', 'error');
+            } finally {
+                uploadBtn.disabled = false;
+                uploadBtn.textContent = 'Upload Document';
+            }
+        });
+
+        // Handle loan submission
+        document.getElementById('loanForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const loanAmount = document.getElementById('loanAmount').value;
+            const duration = document.getElementById('duration').value;
+            const loanBtn = document.getElementById('loanBtn');
+            const messageDiv = document.getElementById('loanMessage');
+            const workflowStatus = document.getElementById('workflowStatus');
+            
+            loanBtn.disabled = true;
+            loanBtn.textContent = 'Submitting...';
+            messageDiv.innerHTML = '';
+            workflowStatus.style.display = 'none';
+
+            try {
+                const response = await fetch(`${API_URL}/api/loan/submit`, {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        loan_amount: parseFloat(loanAmount),
+                        duration: parseInt(duration)
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showMessage(messageDiv, data.message, 'success');
+                    workflowStatus.style.display = 'block';
+                    
+                    // Show additional info
+                    const infoMsg = `Your application for ${loanAmount} TND over ${duration} months has been submitted. Check the console logs for processing updates.`;
+                    setTimeout(() => {
+                        showMessage(messageDiv, infoMsg, 'info');
+                    }, 2000);
+                } else {
+                    showMessage(messageDiv, data.error || 'Submission failed', 'error');
+                }
+            } catch (error) {
+                showMessage(messageDiv, 'Connection error. Make sure the backend is running.', 'error');
+                console.error(error);
+            } finally {
+                loanBtn.disabled = false;
+                loanBtn.textContent = 'Submit Loan Application';
+            }
+        });
+
+        async function loadFiles() {
+            try {
+                const response = await fetch(`${API_URL}/api/files`, {
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    displayFiles(data.files);
+                }
+            } catch (error) {
+                console.error('Error loading files:', error);
+            }
+        }
+
+        function displayFiles(files) {
+            const filesList = document.getElementById('filesList');
+            
+            if (files.length === 0) {
+                filesList.innerHTML = '<p style="color: #999;">No documents uploaded yet</p>';
+                return;
+            }
+
+            filesList.innerHTML = files.map((file, index) => `
+                <div class="file-item">
+                    <span>📄 ${file}</span>
+                    <span class="badge">Document ${index + 1}</span>
+                </div>
+            `).join('');
+        }
+
+        function showMessage(div, text, type) {
+            div.className = `message ${type}`;
+            div.textContent = text;
+        }
+
+        async function logout() {
+            try {
+                await fetch(`${API_URL}/api/logout`, {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+            } catch (error) {
+                console.error('Logout error:', error);
+            }
+            
+            localStorage.removeItem('user');
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>

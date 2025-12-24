@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Loans - Bank Loan System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+        }
+
+        .btn-logout {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-logout:hover {
+            background: #c0392b;
+        }
+
+        .user-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 30px;
+        }
+
+        .loans-section {
+            margin-top: 30px;
+        }
+
+        .loan-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 5px solid #667eea;
+            transition: transform 0.2s;
+        }
+
+        .loan-card:hover {
+            transform: translateX(5px);
+        }
+
+        .loan-card.approved {
+            border-left-color: #27ae60;
+        }
+
+        .loan-card.rejected {
+            border-left-color: #e74c3c;
+        }
+
+        .loan-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .loan-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .status-approved {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-rejected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .loan-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .detail-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 3px;
+        }
+
+        .detail-value {
+            font-size: 16px;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .loan-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 13px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-view {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-view:hover {
+            background: #2980b9;
+        }
+
+        .btn-download {
+            background: #27ae60;
+            color: white;
+        }
+
+        .btn-download:hover {
+            background: #229954;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-close {
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .modal-close:hover {
+            color: #333;
+        }
+
+        .document-content {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .scores-section {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #ddd;
+        }
+
+        .score-item {
+            text-align: center;
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+        }
+
+        .score-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .score-label {
+            font-size: 11px;
+            color: #666;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>My Loan Applications</h1>
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="goToApplication()">New Application</button>
+                <button class="btn btn-logout" onclick="logout()">Logout</button>
+            </div>
+        </div>
+
+        <div class="user-info">
+            <p><strong>Name:</strong> <span id="userName"></span></p>
+            <p><strong>CIN:</strong> <span id="userCin"></span></p>
+            <p><strong>Email:</strong> <span id="userEmail"></span></p>
+        </div>
+
+        <div class="loans-section">
+            <h2 style="color: #333; margin-bottom: 20px;">Loan History</h2>
+            <div id="loansContainer">
+                <div class="loading">Loading your loans...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contract Modal -->
+    <div id="contractModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Loan Contract</h2>
+                <span class="modal-close" onclick="closeModal('contractModal')">&times;</span>
+            </div>
+            <div class="document-content" id="contractContent"></div>
+            <button class="btn btn-download" onclick="downloadContract()" style="margin-top: 20px; width: 100%;">
+                Download Contract
+            </button>
+        </div>
+    </div>
+
+    <!-- Amortization Modal -->
+    <div id="amortizationModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Amortization Table</h2>
+                <span class="modal-close" onclick="closeModal('amortizationModal')">&times;</span>
+            </div>
+            <div class="document-content" id="amortizationContent"></div>
+            <button class="btn btn-download" onclick="downloadAmortization()" style="margin-top: 20px; width: 100%;">
+                Download Amortization Table
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5001';
+        let currentLoanId = null;
+
+        // Check if user is logged in
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (!user) {
+            window.location.href = 'login.html';
+        } else {
+            document.getElementById('userName').textContent = user.name;
+            document.getElementById('userCin').textContent = user.cin;
+            document.getElementById('userEmail').textContent = user.email;
+            loadLoans();
+        }
+
+        async function loadLoans() {
+            try {
+                const response = await fetch(`${API_URL}/api/loans`, {
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    displayLoans(data.loans);
+                } else if (response.status === 401) {
+                    // Not authenticated
+                    localStorage.removeItem('user');
+                    window.location.href = 'login.html';
+                } else {
+                    document.getElementById('loansContainer').innerHTML = 
+                        '<p style="color: #e74c3c; text-align: center;">Failed to load loans</p>';
+                }
+            } catch (error) {
+                console.error('Error loading loans:', error);
+                document.getElementById('loansContainer').innerHTML = 
+                    '<p style="color: #e74c3c; text-align: center;">Connection error</p>';
+            }
+        }
+
+        function displayLoans(loans) {
+            const container = document.getElementById('loansContainer');
+
+            if (loans.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📋</div>
+                        <h3>No Loan Applications Yet</h3>
+                        <p>Start by submitting a new loan application</p>
+                        <button class="btn btn-primary" onclick="goToApplication()" style="margin-top: 20px;">
+                            Apply for a Loan
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = loans.map(loan => {
+                const statusClass = loan.status.toLowerCase();
+                const cardClass = statusClass === 'approved' ? 'approved' : (statusClass === 'rejected' ? 'rejected' : '');
+                
+                return `
+                    <div class="loan-card ${cardClass}">
+                        <div class="loan-header">
+                            <div class="loan-title">
+                                Loan Application #${loan.loan_id}
+                            </div>
+                            <span class="status-badge status-${statusClass}">
+                                ${loan.status}
+                            </span>
+                        </div>
+
+                        <div class="loan-details">
+                            <div class="detail-item">
+                                <span class="detail-label">Amount</span>
+                                <span class="detail-value">${formatCurrency(loan.loan_amount)} TND</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Duration</span>
+                                <span class="detail-value">${loan.duration_months} months</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Monthly Payment</span>
+                                <span class="detail-value">${formatCurrency(loan.monthly_payment)} TND</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Interest Rate</span>
+                                <span class="detail-value">${loan.interest_rate}%</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Application Date</span>
+                                <span class="detail-value">${formatDate(loan.application_date)}</span>
+                            </div>
+                            ${loan.approved_date ? `
+                            <div class="detail-item">
+                                <span class="detail-label">Approved Date</span>
+                                <span class="detail-value">${formatDate(loan.approved_date)}</span>
+                            </div>
+                            ` : ''}
+                        </div>
+
+                        ${loan.status === 'APPROVED' ? `
+                        <div class="scores-section">
+                            <div class="score-item">
+                                <div class="score-value">${loan.commercial_score}</div>
+                                <div class="score-label">Commercial Score</div>
+                            </div>
+                            <div class="score-item">
+                                <div class="score-value">${loan.risk_score}</div>
+                                <div class="score-label">Risk Score</div>
+                            </div>
+                            <div class="score-item">
+                                <div class="score-value">${loan.final_score}</div>
+                                <div class="score-label">Final Score</div>
+                            </div>
+                        </div>
+                        ` : ''}
+
+                        ${loan.status === 'REJECTED' && loan.rejection_reason ? `
+                        <div style="margin-top: 15px; padding: 10px; background: #fff3cd; border-radius: 5px;">
+                            <strong>Reason:</strong> ${loan.rejection_reason}
+                        </div>
+                        ` : ''}
+
+                        ${loan.status === 'APPROVED' ? `
+                        <div class="loan-actions">
+                            <button class="btn-small btn-view" onclick="viewContract(${loan.loan_id})">
+                                📄 View Contract
+                            </button>
+                            <button class="btn-small btn-view" onclick="viewAmortization(${loan.loan_id})">
+                                📊 View Amortization
+                            </button>
+                            <button class="btn-small btn-download" onclick="downloadContractDirect(${loan.loan_id})">
+                                ⬇️ Download Contract
+                            </button>
+                            <button class="btn-small btn-download" onclick="downloadAmortizationDirect(${loan.loan_id})">
+                                ⬇️ Download Schedule
+                            </button>
+                        </div>
+                        ` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function viewContract(loanId) {
+            currentLoanId = loanId;
+            try {
+                const response = await fetch(`${API_URL}/api/loans/${loanId}/contract/view`, {
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('contractContent').textContent = data.content;
+                    document.getElementById('contractModal').style.display = 'block';
+                } else {
+                    alert('Failed to load contract');
+                }
+            } catch (error) {
+                console.error('Error loading contract:', error);
+                alert('Connection error');
+            }
+        }
+
+        async function viewAmortization(loanId) {
+            currentLoanId = loanId;
+            try {
+                const response = await fetch(`${API_URL}/api/loans/${loanId}/amortization/view`, {
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('amortizationContent').textContent = data.content;
+                    document.getElementById('amortizationModal').style.display = 'block';
+                } else {
+                    alert('Failed to load amortization table');
+                }
+            } catch (error) {
+                console.error('Error loading amortization:', error);
+                alert('Connection error');
+            }
+        }
+
+        function downloadContract() {
+            if (currentLoanId) {
+                window.location.href = `${API_URL}/api/loans/${currentLoanId}/contract`;
+            }
+        }
+
+        function downloadAmortization() {
+            if (currentLoanId) {
+                window.location.href = `${API_URL}/api/loans/${currentLoanId}/amortization`;
+            }
+        }
+
+        function downloadContractDirect(loanId) {
+            window.location.href = `${API_URL}/api/loans/${loanId}/contract`;
+        }
+
+        function downloadAmortizationDirect(loanId) {
+            window.location.href = `${API_URL}/api/loans/${loanId}/amortization`;
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
+        }
+
+        function formatCurrency(amount) {
+            return parseFloat(amount).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return 'N/A';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-GB', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            });
+        }
+
+        function goToApplication() {
+            window.location.href = 'application.html';
+        }
+
+        async function logout() {
+            try {
+                await fetch(`${API_URL}/api/logout`, {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+            } catch (error) {
+                console.error('Logout error:', error);
+            }
+
+            localStorage.removeItem('user');
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>
